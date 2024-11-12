@@ -4,6 +4,7 @@
     <Title>EFCore.BulkExtensions.SqlServer</Title>
     <Description>EntityFramework .Net EFCore EF Core Bulk Batch Extensions for Insert Update Delete Read (CRUD) operations on SQL Server</Description>
     <PackageTags>$(PackageTags) SQLServer</PackageTags>
+      <PackageId>EFCore.BulkExtensions.SqlServer.SoftLider</PackageId>
   </PropertyGroup>
   <ItemGroup>
 	<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />

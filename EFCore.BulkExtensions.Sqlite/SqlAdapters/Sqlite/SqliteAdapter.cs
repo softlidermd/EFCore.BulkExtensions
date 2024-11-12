@@ -32,7 +32,7 @@ public class SqliteAdapter : ISqlOperationsAdapter
     {
         await InsertAsync(context, type, entities, tableInfo, progress, isAsync: true, cancellationToken).ConfigureAwait(false);
     }
-    
+
     /// <inheritdoc/>
     public static async Task InsertAsync<T>(DbContext context, Type type, IEnumerable<T> entities, TableInfo tableInfo, Action<decimal>? progress, bool isAsync, CancellationToken cancellationToken)
     {
@@ -43,7 +43,7 @@ public class SqliteAdapter : ISqlOperationsAdapter
                                  : OpenAndGetSqliteConnection(context);
         }
         bool doExplicitCommit = false;
-
+        SqliteTransaction? transaction = null;
         try
         {
             if (context.Database.CurrentTransaction == null)
@@ -52,7 +52,7 @@ public class SqliteAdapter : ISqlOperationsAdapter
                 doExplicitCommit = true;
             }
 
-            SqliteTransaction? transaction = (SqliteTransaction?)SqlAdaptersMapping.DbServer.DbTransaction;
+            transaction = (SqliteTransaction?)SqlAdaptersMapping.DbServer.DbTransaction;
             if (transaction == null)
             {
                 var dbTransaction = doExplicitCommit ? connection.BeginTransaction()
@@ -88,10 +88,17 @@ public class SqliteAdapter : ISqlOperationsAdapter
                 transaction?.Commit();
             }
         }
+        catch (Exception)
+        {
+            if (doExplicitCommit)
+                transaction?.Rollback();
+            throw;
+        }
         finally
         {
             if (doExplicitCommit)
             {
+                transaction?.Dispose();
                 if (isAsync)
                 {
                     await context.Database.CloseConnectionAsync().ConfigureAwait(false);
@@ -116,14 +123,14 @@ public class SqliteAdapter : ISqlOperationsAdapter
     {
         await MergeAsync(context, type, entities, tableInfo, operationType, progress, isAsync: true, cancellationToken).ConfigureAwait(false);
     }
-    
+
     /// <inheritdoc/>
     protected static async Task MergeAsync<T>(DbContext context, Type type, IEnumerable<T> entities, TableInfo tableInfo, OperationType operationType, Action<decimal>? progress, bool isAsync, CancellationToken cancellationToken) where T : class
     {
         SqliteConnection connection = isAsync ? await OpenAndGetSqliteConnectionAsync(context, cancellationToken).ConfigureAwait(false)
                                                     : OpenAndGetSqliteConnection(context);
         bool doExplicitCommit = false;
-
+        SqliteTransaction? transaction = null;
         try
         {
             if (context.Database.CurrentTransaction == null)
@@ -133,7 +140,7 @@ public class SqliteAdapter : ISqlOperationsAdapter
             }
             var dbTransaction = doExplicitCommit ? connection.BeginTransaction()
                                                  : context.Database.CurrentTransaction?.GetUnderlyingTransaction(tableInfo.BulkConfig);
-            var transaction = (SqliteTransaction?)dbTransaction;
+            transaction = (SqliteTransaction?)dbTransaction;
 
             var command = GetSqliteCommand(context, type, entities, tableInfo, connection, transaction);
 
@@ -184,8 +191,17 @@ public class SqliteAdapter : ISqlOperationsAdapter
                 transaction?.Commit();
             }
         }
+        catch (Exception)
+        {
+            if (doExplicitCommit)
+                transaction?.Rollback();
+            throw;
+        }
         finally
         {
+            if (doExplicitCommit)
+                transaction?.Dispose();
+
             if (isAsync)
             {
                 await context.Database.CloseConnectionAsync().ConfigureAwait(false);
@@ -209,7 +225,7 @@ public class SqliteAdapter : ISqlOperationsAdapter
     {
         await ReadAsync(context, type, entities, tableInfo, progress, isAsync: true, cancellationToken).ConfigureAwait(false);
     }
-    
+
     /// <inheritdoc/>
     protected static async Task ReadAsync<T>(DbContext context, Type type, IEnumerable<T> entities, TableInfo tableInfo, Action<decimal>? progress, bool isAsync, CancellationToken cancellationToken) where T : class
     {
@@ -274,6 +290,12 @@ public class SqliteAdapter : ISqlOperationsAdapter
             {
                 tableInfo.UpdateReadEntities(entities, existingEntities, context);
             }
+        }
+        catch (Exception)
+        {
+            if (doExplicitCommit)
+                transaction?.Rollback();
+            throw;
         }
         finally
         {
@@ -515,7 +537,7 @@ public class SqliteAdapter : ISqlOperationsAdapter
             }
         }
     }
-    
+
     /// <inheritdoc/>
     public static void SetIdentityForOutput<T>(IEnumerable<T> entities, TableInfo tableInfo, object? lastRowIdScalar)
     {

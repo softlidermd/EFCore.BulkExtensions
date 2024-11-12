@@ -3,7 +3,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <Authors>borisdj</Authors>
-    <PackageProjectUrl>https://github.com/borisdj/EFCore.BulkExtensions</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/softlidermd/EFCore.BulkExtensions</PackageProjectUrl>
     <Company>CODIS LLC</Company>
     <Version>8.1.1</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
@@ -13,12 +13,9 @@
 	<PackageReleaseNotes>some changes</PackageReleaseNotes>
     <PackageTags>EntityFrameworkCore Entity Framework Core .Net EFCore EF Core Bulk Batch Copy SqlBulkCopy Extensions Insert Update Delete Read Truncate SaveChanges</PackageTags>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <RepositoryUrl>https://github.com/borisdj/EFCore.BulkExtensions</RepositoryUrl>
+    <RepositoryUrl>https://github.com/softlidermd/EFCore.BulkExtensions</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Keys\EFCore.BulkExtensions.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

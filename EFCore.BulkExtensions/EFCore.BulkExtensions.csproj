@@ -6,6 +6,7 @@
     <PackageTags>$(PackageTags) SQLServer PostgreSQL MySQL SQLite</PackageTags>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <PackageId>EFCore.BulkExtensions.SoftLider</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\EFCore.BulkExtensions.MySql\EFCore.BulkExtensions.MySql.csproj" />
